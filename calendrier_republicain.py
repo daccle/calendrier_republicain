@@ -18,38 +18,33 @@ def heure_republicain(timeobj=datetime.now()):
     dec_minutes = (dec_sec_of_day - int(dec_hours) * 10000) / 100
     dec_seconds = ((dec_sec_of_day - int(dec_hours) * 10000) - int(dec_minutes) * 100)
 
-    return "%02d:%02d:%02d" % (int(dec_hours), int(dec_minutes), int(dec_seconds))
+    return (int(dec_hours), int(dec_minutes), int(dec_seconds))
 
 
 def date_republicain(today=date.today()):
     """
-    Mois d'automne (terminaison en aire)
+    for reference:
+
+    -Mois d'automne (terminaison en aire)
     Vendémiaire (22 septembre ~ 21 octobre) - Période des vendanges
     Brumaire (22 octobre ~ 20 novembre) - Période des brumes et des brouillards
     Frimaire (21 novembre ~ 20 décembre) - Période des froids (frimas)
-    Mois d'hiver (terminaison en ose à l'origine, abusivement orthographiée ôse par la suite)
+
+    -Mois d'hiver (terminaison en ose à l'origine, abusivement orthographiée ôse par la suite)
     Nivôse (21 décembre ~ 19 janvier) - Période de la neige
     Pluviôse (20 janvier ~ 18 février) - Période des pluies
     Ventôse (19 février ~ 20 mars) - Période des vents
-    Mois du printemps (terminaison en al)
+
+    -Mois du printemps (terminaison en al)
     Germinal (21 mars ~ 19 avril) - Période de la germination
     Floréal (20 avril ~ 19 mai) - Période de l'épanouissement des fleurs
     Prairial (20 mai ~ 18 juin) - Période des récoltes des prairies
-    Mois d'été (terminaison en idor)
+
+    -Mois d'été (terminaison en idor)
     Messidor (19 juin ~ 18 juillet) - Période des moissons
     Thermidor (19 juillet ~ 17 août) - Période des chaleurs
     Fructidor (18 août ~ 16 septembre) - Période des fruits
     """
-
-    def current_year(today=today):
-        return today.year - 1792
-
-    def in_mois((start_day, start_month, end_day, end_month), today=today):
-        start_date = date(today.year, start_month, start_day)
-        end_date = date(today.year, end_month, end_day)
-        if today >= start_date and today <= end_date:
-            return (today.timetuple().tm_yday - start_date.timetuple().tm_yday) + 1
-        return 0
 
     mois = (("Vendémiaire", (22, 9, 21, 10)),
             ("Brumaire", (22, 10, 20, 11)),
@@ -64,14 +59,33 @@ def date_republicain(today=date.today()):
             ("Thermidor", (19, 7, 17, 8)),
             ("Fructidor", (18, 8, 16, 9)))
 
+    def current_year(today=today):
+        # FIXME: the year start on the 22th of september each year
+        return today.year - 1792
+
+    def in_mois((start_day, start_month, end_day, end_month), today=today):
+        """
+        if today is in between start and end date return day of month,
+        else return 0
+        """
+        start_date = date(today.year, start_month, start_day)
+        end_date = date(today.year, end_month, end_day)
+        if today >= start_date and today <= end_date:
+            return (today.timetuple().tm_yday - start_date.timetuple().tm_yday) + 1
+        return 0
+
+    # just indices to access the tuple of tuples easier, ugly but they do the job:
+    date_range = 1
+    name = 0
+
     for m in mois:
-        day_of_month = in_mois(m[1])
+        day_of_month = in_mois(m[date_range])
         if day_of_month != 0:
-            return day_of_month, m[0], current_year()
+            return day_of_month, m[name], current_year()
 
 
 def main():
-    print "Temps du jour républicaine: ", heure_republicain()
+    print "Temps du jour républicaine: %02d:%02d:%02d" % heure_republicain()
     print "Date républicaine: %d. %s %d" % date_republicain()
 
 if __name__ == '__main__':
