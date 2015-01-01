@@ -69,9 +69,11 @@ def date_republicain(today=date.today()):
         else return 0
         """
         start_date = date(today.year, start_month, start_day)
+        if(start_month > end_month):
+            start_date = date(today.year-1, start_month, start_day)
         end_date = date(today.year, end_month, end_day)
         if today >= start_date and today <= end_date:
-            return (today.timetuple().tm_yday - start_date.timetuple().tm_yday) + 1
+            return (today - start_date).days + 1
         return 0
 
     # just indices to access the tuple of tuples easier, ugly but they do the job:
