@@ -10,6 +10,7 @@ see: http://fr.wikipedia.org/wiki/Calendrier_r%C3%A9publicain
 
 from datetime import datetime
 from datetime import date
+import json
 
 
 def heure_republicain(timeobj=datetime.now()):
@@ -59,6 +60,9 @@ def date_republicain(today=date.today()):
             ("Thermidor", (19, 7, 17, 8)),
             ("Fructidor", (18, 8, 16, 9)))
 
+    input_file  = file("jours.json", "r")
+    dayNames = json.loads(input_file.read(), 'utf-8')
+
     def current_year(today=today):
         # FIXME: the year start on the 22th of september each year
         return today.year - 1792
@@ -83,12 +87,13 @@ def date_republicain(today=date.today()):
     for m in mois:
         day_of_month = in_mois(m[date_range])
         if day_of_month != 0:
-            return day_of_month, m[name], current_year()
+            dayName = dayNames[m[name]][day_of_month-1]
+            return day_of_month, m[name], current_year(), dayName.encode('ascii')
 
 
 def main():
     print "Temps du jour républicaine: %02d:%02d:%02d" % heure_republicain()
-    print "Date républicaine: %d. %s %d" % date_republicain()
+    print "Date républicaine: %d. %s %d, %s " % date_republicain()
 
 if __name__ == '__main__':
     main()
